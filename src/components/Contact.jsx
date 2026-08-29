@@ -1,5 +1,5 @@
 export default Contact;
-import Add from "./add.jsx";
+import Add from "./Add.jsx";
 import Delete from "./Delete.jsx";
 import { useState } from "react";
 
