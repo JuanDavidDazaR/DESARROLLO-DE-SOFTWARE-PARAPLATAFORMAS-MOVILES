@@ -1,7 +1,5 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "./assets/vite.svg";
-import heroImg from "./assets/hero.png";
+import cifar from "/public/cifar.jpg";
 import "./App.css";
 import Contact from "./components/Contact.jsx";
 import Counter from "./components/Counter.jsx";
@@ -26,6 +24,7 @@ function App() {
     <div>
       <h1>Lista de contactos</h1>
       <Contact />
+      <img src={cifar} alt="cifar10" />
     </div>
   );
 }
