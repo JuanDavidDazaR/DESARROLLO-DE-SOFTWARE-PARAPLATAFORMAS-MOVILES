@@ -13,7 +13,7 @@ function App() {
 
   if (cargando) {
     return (
-      <div>
+      <div className="App-container">
         <h1>Lista de contactos</h1>
         <Counter onFinish={terminarCarga} />
       </div>
@@ -21,7 +21,7 @@ function App() {
   }
 
   return (
-    <div>
+    <div className="App-container">
       <h1>Lista de contactos</h1>
       <Contact />
       <img src={cifar} alt="cifar10" />

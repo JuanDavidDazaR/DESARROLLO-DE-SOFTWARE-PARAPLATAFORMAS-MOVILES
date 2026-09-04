@@ -13,7 +13,7 @@ function Add({ onAdd }) {
   };
 
   return (
-    <div>
+    <div className="add-form">
       <input
         type="text"
         placeholder="Nombre"

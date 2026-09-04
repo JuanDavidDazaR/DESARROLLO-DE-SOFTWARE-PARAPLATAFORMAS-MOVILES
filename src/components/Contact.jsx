@@ -22,9 +22,9 @@ function Contact() {
 
   return (
     <>
-      <ul>
+      <ul className="contact-list">
         {myContacts.map((item, index) => (
-          <li key={index}>
+          <li className="contact-item" key={index}>
             {item.nombre} - {item.telefono}
             <Delete onDelete={() => deleteContacto(index)} />
           </li>
