@@ -1,6 +1,6 @@
 {
   "name": "MediClinic - Pacientes",
-  "short_name": "Pacientes",
+  "short_name": "MediClinic",
   "description": "Aplicación para la administración de pacientes de MediClinic",
   "start_url": "/",
   "display": "standalone",

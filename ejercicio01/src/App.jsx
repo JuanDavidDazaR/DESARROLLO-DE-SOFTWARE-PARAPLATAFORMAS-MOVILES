@@ -19,7 +19,7 @@ function App() {
 
   if (!logueado) {
     return (
-      <div>
+      <div className="App-container">
         <h1>Login</h1>
         <Login onLogin={handleLogin} />
       </div>
@@ -27,7 +27,7 @@ function App() {
   }
 
   return (
-    <div>
+    <div className="App-container">
       <h1>Lista de pacientes</h1>
       <button onClick={handleLogout}>Logout</button>
       <Patients />

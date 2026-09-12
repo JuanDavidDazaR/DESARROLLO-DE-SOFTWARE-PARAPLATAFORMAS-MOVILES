@@ -1,0 +1,7 @@
+{
+  "name": "ejercicio02",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react-vite"
+}
