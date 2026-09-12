@@ -1,8 +1,8 @@
 export default Contact;
-import { IonList, IonItem, IonLabel } from "@ionic/react";
-import Add from "./Add";
+import { IonList, IonItem, IonLabel, IonButton } from "@ionic/react";
 import Delete from "./Delete";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 interface Contacto {
   nombre: string;
@@ -19,10 +19,18 @@ function Contact() {
     { nombre: "Ruy Cabeção", telefono: "3134030691" },
     { nombre: "Poli", telefono: "320623e9139" },
   ]);
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const addContacto = (nuevoContacto: Contacto): void => {
-    setMyContacts([...myContacts, nuevoContacto]);
-  };
+  useEffect(() => {
+    const nuevoContacto = (location.state as { nuevoContacto?: Contacto })
+      ?.nuevoContacto;
+
+    if (nuevoContacto) {
+      setMyContacts((prev) => [...prev, nuevoContacto]);
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location.state]);
 
   const deleteContacto = (index: number): void => {
     const ActualizarContactos = [...myContacts];
@@ -30,19 +38,26 @@ function Contact() {
     setMyContacts(ActualizarContactos);
   };
 
+  const irADetalle = (contacto: Contacto): void => {
+    navigate("/detail", { state: { contact: contacto } });
+  };
+
   return (
     <>
+      <IonButton expand="block" onClick={() => navigate("/create")}>
+        Crear contacto
+      </IonButton>
       <IonList className="contact-list">
         {myContacts.map((item, index) => (
           <IonItem className="contact-item" key={index}>
             <IonLabel>
               {item.nombre} - {item.telefono}
             </IonLabel>
+            <IonButton onClick={() => irADetalle(item)}>Detalle</IonButton>
             <Delete onDelete={() => deleteContacto(index)} />
           </IonItem>
         ))}
       </IonList>
-      <Add onAdd={addContacto} />
     </>
   );
 }
