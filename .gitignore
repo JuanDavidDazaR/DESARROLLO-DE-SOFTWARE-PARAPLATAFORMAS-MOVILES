@@ -7,11 +7,13 @@
 
 
 #firebase
-task/src/firebase/Config.js
+challenge06/src/firebase/Config.js
 
 /contactos
 /ejercicio02
 /ejercicio01
+/task
+
 
 # testing
 /coverage
