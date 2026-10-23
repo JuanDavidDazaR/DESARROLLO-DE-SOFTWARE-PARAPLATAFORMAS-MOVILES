@@ -1,49 +1,98 @@
-# DESARROLLO-DE-SOFTWARE-PARAPLATAFORMAS-MOVILES
+# Sensores (Challenge 07)
 
-## Challenge 05 - Task Manager con Firebase (Ionic + React + TypeScript)
+Aplicación móvil hecha con **Ionic React + Capacitor** que muestra cómo usar los sensores y funciones nativas del teléfono. La pantalla principal tiene un botón por cada sensor, y cada botón abre una página dedicada que lo implementa con un _custom hook_.
 
-Aplicación de gestión de tareas construida con Ionic, React y TypeScript. Usa Firebase Authentication para el registro, inicio y cierre de sesión, Context API para compartir el estado entre páginas, y custom hooks para encapsular la lógica de Firebase.
+## Funcionalidades
 
-## Cómo correr el proyecto
+| Página                 | Plugin de Capacitor              | Qué hace                                                                                              |
+| ---------------------- | -------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Geolocalización        | `@capacitor/geolocation`         | Obtiene la posición actual y la sigue en tiempo real (iniciar y detener).                             |
+| Cámara                 | `@capacitor/camera`              | Toma una foto y la muestra en pantalla.                                                               |
+| Acelerómetro           | `@capacitor/motion`              | Muestra los ejes X, Y, Z, la magnitud, si hay movimiento y detecta sacudidas.                         |
+| Dispositivo            | `@capacitor/device`              | Muestra batería, modelo, plataforma, sistema operativo e identificador.                               |
+| Haptics                | `@capacitor/haptics`             | Impactos suaves y fuertes, notificaciones de éxito y error, y vibración.                              |
+| Archivos               | `@capacitor/filesystem`          | Escribe, lee, lista y elimina un archivo JSON en el dispositivo.                                      |
+| Notificaciones locales | `@capacitor/local-notifications` | Pide permisos, envía una notificación inmediata y programa otra a 5 segundos.                         |
+| Notificaciones push    | `@capacitor/push-notifications`  | Pide permisos, registra el dispositivo en Firebase y muestra el token y las notificaciones recibidas. |
 
-El proyecto se encuentra dentro de la carpeta `task/`. Las credenciales de Firebase **no están incluidas en el repositorio** por seguridad, así que hay que crear un proyecto propio en Firebase siguiendo estos pasos.
+## Requisitos
 
-### 1. Crear el proyecto en Firebase
+- Node.js 18 o superior y npm
+- Android Studio con el Android SDK instalado
+- **JDK 21** (Capacitor 8 no funciona con versiones más nuevas ni más viejas)
+- Un celular Android con depuración USB activada, o un emulador con Google Play
 
-1. Entra a [console.firebase.google.com](https://console.firebase.google.com/) e inicia sesión con tu cuenta de Google.
-2. Haz clic en **Crear un proyecto** y sigue el asistente.
-3. Ya creado el proyecto, ve a **Authentication** en el menú de la izquierda.
-4. Entra a la pestaña **Método de acceso**, elige **Correo electrónico/contraseña**, actívalo y guarda.
-
-### 2. Obtener las credenciales
-
-1. En el menú de la izquierda, haz clic en el ícono de engranaje y entra a **Configuración del proyecto**.
-2. Baja hasta **Tus apps** y haz clic en el ícono web `</>` para agregar una app web.
-3. Ponle un nombre y haz clic en **Registrar app**.
-4. En el paso **Agrega el SDK de Firebase**, selecciona **Usar npm** y copia el objeto `firebaseConfig`.
-
-### 3. Crear el archivo de configuración
-
-1. Clona el repositorio y cámbiate a la rama del challenge:
+## Instalación
 
 ```bash
-   git checkout Challenge05
-   cd task
-```
-
-2. Copia la plantilla con el nombre que espera la app:
-
-```bash
-   cp src/firebase/Config.example.js src/firebase/Config.js
-```
-
-3. Abre `src/firebase/Config.js` y reemplaza los valores de `firebaseConfig` por los que copiaste en el paso anterior.
-
-### 4. Instalar y ejecutar
-
-```bash
+git clone <url-del-repositorio>
+cd <repositorio>/sensores
 npm install
-ionic serve
 ```
 
-La app se abre en `http://localhost:8100`. Crea una cuenta desde **Crear cuenta** e inicia sesión.
+## Configuración local
+
+Estos archivos no están en el repositorio y cada persona debe crear los suyos.
+
+**1. SDK de Android.** Crea `android/local.properties` con la ruta de tu SDK:
+
+```properties
+sdk.dir=C:\\Users\\TU_USUARIO\\AppData\\Local\\Android\\Sdk
+```
+
+**2. Java 21.** Si tu Java por defecto no es el 21, agrega en `android/gradle.properties` la ruta de tu JDK 21 (esa línea es local, no la subas):
+
+```properties
+org.gradle.java.home=C:\\ruta\\a\\jdk-21
+```
+
+**3. Firebase (solo para notificaciones push).**
+
+- Crea un proyecto en la [consola de Firebase](https://console.firebase.google.com) y agrega una app Android con el mismo `appId` que aparece en `capacitor.config.ts`.
+- Descarga `google-services.json` y colócalo en `android/app/`.
+- Crea `src/firebase/Config.js` con los datos de tu proyecto de Firebase.
+
+Sin estos dos archivos todo funciona menos las notificaciones push.
+
+**4. Permisos de Android.** Ya declarados en `android/app/src/main/AndroidManifest.xml`: cámara, ubicación (aproximada y precisa), vibración y notificaciones. Si cambias de proyecto, deben estar ahí.
+
+## Ejecutar en el navegador (desarrollo)
+
+```bash
+npm run dev
+```
+
+Sirve para ver la interfaz, pero los sensores nativos solo funcionan correctamente en un dispositivo.
+
+## Desplegar en un celular Android
+
+Cada vez que cambies código, repite estos pasos desde la carpeta `sensores/`:
+
+```bash
+npm run build
+npx cap sync android
+npx cap run android
+```
+
+Elige tu dispositivo cuando lo pida la terminal. Para abrir el proyecto en Android Studio:
+
+```bash
+npx cap open android
+```
+
+Para generar un APK de depuración sin instalarlo:
+
+```bash
+cd android
+./gradlew assembleDebug
+```
+
+El archivo queda en `android/app/build/outputs/apk/debug/app-debug.apk`.
+
+## Probar las notificaciones push
+
+1. Abre la app, entra a **Notificaciones push** y toca **Activar Push**. Acepta el permiso.
+2. Copia el token que aparece en pantalla. También se imprime en la consola (`adb logcat | grep "Capacitor/Console"`).
+3. En Firebase, ve a **Messaging**, crea una campaña y usa **Enviar mensaje de prueba**, pegando el token.
+
+Si la app está abierta, la notificación aparece en la página. Si está en segundo plano, llega a la barra de notificaciones.
