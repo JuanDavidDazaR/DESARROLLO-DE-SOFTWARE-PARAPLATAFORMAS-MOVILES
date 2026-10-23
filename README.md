@@ -25,8 +25,8 @@ Aplicación móvil hecha con **Ionic React + Capacitor** que muestra cómo usar 
 ## Instalación
 
 ```bash
-git clone <url-del-repositorio>
-cd <repositorio>/sensores
+git clone https://github.com/JuanDavidDazaR/DESARROLLO-DE-SOFTWARE-PARAPLATAFORMAS-MOVILES.git
+cd DESARROLLO-DE-SOFTWARE-PARAPLATAFORMAS-MOVILES/sensores
 npm install
 ```
 
