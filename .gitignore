@@ -1,0 +1,40 @@
+
+/*
+
+# ...excepto esto
+!/.gitignore
+!/README.md
+!/Parcial02/
+!/evidencias/
+
+
+**/src/firebase/Config.ts
+**/src/firebase/Config.js
+**/serviceAccount*.json
+**/google-services.json
+**/GoogleService-Info.plist
+**/.env
+**/.env.*
+*.keystore
+*.jks
+
+# Dependencias y compilados
+node_modules/
+dist/
+build/
+.vite/
+
+# Android 
+**/android/.gradle/
+**/android/build/
+**/android/app/build/
+**/android/local.properties
+**/android/capacitor-cordova-android-plugins/
+**/ios/App/Pods/
+
+# Editor y sistema
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.log
