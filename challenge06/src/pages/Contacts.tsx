@@ -1,46 +1,46 @@
 export default Contacts;
-import { useState, useEffect } from "react";
 import {
   IonPage,
   IonHeader,
   IonToolbar,
   IonTitle,
   IonContent,
-  IonItem,
-  IonInput,
-  IonButton,
   IonList,
+  IonItem,
   IonLabel,
-  IonSpinner,
+  IonButton,
   IonText,
+  useIonViewWillEnter,
 } from "@ionic/react";
+import { useNavigate } from "react-router-dom";
 import { useCollection } from "../hooks/useCollection";
-import "./Contacts.css";
-import Delete from "../components/Delete";
 import { useNetwork } from "../hooks/useNetwork";
+import Delete from "../components/Delete";
+import LogoutButton from "../components/LogoutButton";
+import "./Contacts.css";
+
+interface Contacto {
+  id: string;
+  nombre: string;
+  telefono: string;
+}
 
 function Contacts() {
+  const { results, error, getAll, remove } = useCollection("contacts");
   const { isOnline } = useNetwork();
-  const [nombre, setNombre] = useState("");
-  const [telefono, setTelefono] = useState("");
-  const { results, isPending, error, getAll, add, remove } =
-    useCollection("contacts");
+  const navigate = useNavigate();
 
-  useEffect(() => {
+  useIonViewWillEnter(() => {
     getAll();
-  }, []);
-
-  const handleAgregar = async () => {
-    if (!nombre.trim()) return;
-    await add({ nombre, telefono });
-    setNombre("");
-    setTelefono("");
-    await getAll();
-  };
+  });
 
   const handleEliminar = async (id: string) => {
     await remove(id);
     await getAll();
+  };
+
+  const irADetalle = (contact: Contacto): void => {
+    navigate("/tabs/contacts/detail", { state: { contact } });
   };
 
   return (
@@ -48,50 +48,38 @@ function Contacts() {
       <IonHeader>
         <IonToolbar>
           <IonTitle>Contactos</IonTitle>
+          <LogoutButton />
         </IonToolbar>
       </IonHeader>
-      {!isOnline && (
-        <IonText color="warning">
-          <p>Sin conexión. Las acciones están deshabilitadas.</p>
-        </IonText>
-      )}
       <IonContent className="ion-padding">
-        <IonItem>
-          <IonLabel position="floating">Nombre</IonLabel>
-          <IonInput
-            value={nombre}
-            onIonChange={(e) => setNombre(e.detail.value ?? "")}
-          />
-        </IonItem>
-        <IonItem>
-          <IonLabel position="floating">Teléfono</IonLabel>
-          <IonInput
-            value={telefono}
-            onIonChange={(e) => setTelefono(e.detail.value ?? "")}
-          />
-        </IonItem>
-
-        <IonButton
-          expand="block"
-          className="ion-margin-top"
-          onClick={handleAgregar}
-          disabled={isPending || !isOnline}
-        >
-          {isPending ? <IonSpinner name="crescent" /> : "Agregar"}
-        </IonButton>
-
+        {!isOnline && (
+          <IonText color="warning">
+            <p>Sin conexión. Las acciones están deshabilitadas.</p>
+          </IonText>
+        )}
         {error && (
           <IonText color="danger">
             <p>{error}</p>
           </IonText>
         )}
 
+        <IonButton
+          expand="block"
+          disabled={!isOnline}
+          onClick={() => navigate("/tabs/contacts/create")}
+        >
+          Crear contacto
+        </IonButton>
+
         <IonList className="ion-margin-top">
-          {results.map((contact) => (
+          {results.map((contact: Contacto) => (
             <IonItem key={contact.id}>
               <IonLabel>
                 {contact.nombre} - {contact.telefono}
               </IonLabel>
+              <IonButton fill="clear" onClick={() => irADetalle(contact)}>
+                Detalle
+              </IonButton>
               <Delete
                 onDelete={() => handleEliminar(contact.id)}
                 disabled={!isOnline}

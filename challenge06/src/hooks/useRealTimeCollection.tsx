@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { rtdb } from "../firebase/Config";
-import { ref, get, push, set, remove as removeRef } from "firebase/database";
+import {
+  ref,
+  get,
+  push,
+  update as updateRef,
+  remove as removeRef,
+} from "firebase/database";
 
 export function useRealTimeCollection(table: string) {
   const [results, setResults] = useState<any[]>([]);
@@ -49,7 +55,7 @@ export function useRealTimeCollection(table: string) {
     setIsPending(true);
     setError(null);
     try {
-      await set(ref(rtdb, `${table}/${id}`), {
+      await updateRef(ref(rtdb, `${table}/${id}`), {
         ...data,
         updatedAt: new Date().toISOString(),
       });
@@ -61,7 +67,6 @@ export function useRealTimeCollection(table: string) {
       return false;
     }
   };
-
   const remove = async (id: string) => {
     setIsPending(true);
     setError(null);

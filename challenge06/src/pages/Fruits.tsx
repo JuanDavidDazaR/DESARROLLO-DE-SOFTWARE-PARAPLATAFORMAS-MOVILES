@@ -15,6 +15,7 @@ import {
 } from "@ionic/react";
 import { useDexie } from "../hooks/useDexie";
 import Delete from "../components/Delete";
+import LogoutButton from "../components/LogoutButton";
 
 function Fruits() {
   const [nombre, setNombre] = useState("");
@@ -42,6 +43,7 @@ function Fruits() {
       <IonHeader>
         <IonToolbar>
           <IonTitle>Frutas</IonTitle>
+          <LogoutButton />
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">

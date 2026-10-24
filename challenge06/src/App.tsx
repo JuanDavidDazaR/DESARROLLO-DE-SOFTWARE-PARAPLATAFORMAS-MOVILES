@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Navigate, Route } from "react-router-dom";
+import { useEffect } from "react";
+import { Navigate, Route, useNavigate } from "react-router-dom";
 import {
   IonApp,
   IonIcon,
@@ -19,8 +19,14 @@ import {
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Contacts from "./pages/Contacts";
+import ContactCreate from "./pages/ContactCreate";
+import ContactDetail from "./pages/ContactDetail";
 import Tasks from "./pages/Tasks";
+import TaskAdd from "./pages/TaskAdd";
+import TaskDetail from "./pages/TaskDetail";
+import TaskEdit from "./pages/TaskEdit";
 import Fruits from "./pages/Fruits";
+import ContactEdit from "./pages/ContactEdit";
 import { AuthProvider, useAuthContext } from "./context/AuthContext";
 
 /* Core CSS required for Ionic components to work properly */
@@ -47,12 +53,25 @@ import "./theme/variables.css";
 setupIonicReact();
 
 function Tabs() {
+  const { user, loading } = useAuthContext();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && !user) navigate("/login", { replace: true });
+  }, [user, loading]);
+
   return (
     <IonTabs>
       <IonRouterOutlet>
         <Route path="/tabs/contacts" element={<Contacts />} />
+        <Route path="/tabs/contacts/create" element={<ContactCreate />} />
+        <Route path="/tabs/contacts/detail" element={<ContactDetail />} />
         <Route path="/tabs/tasks" element={<Tasks />} />
+        <Route path="/tabs/tasks/add" element={<TaskAdd />} />
+        <Route path="/tabs/tasks/detail" element={<TaskDetail />} />
+        <Route path="/tabs/tasks/edit" element={<TaskEdit />} />
         <Route path="/tabs/fruits" element={<Fruits />} />
+        <Route path="/tabs/contacts/edit" element={<ContactEdit />} />
         <Route
           path="/tabs"
           element={<Navigate to="/tabs/contacts" replace />}
@@ -87,7 +106,10 @@ function AppRoutes() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/tabs/*" element={<Tabs />} />
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route
+          path="/"
+          element={<Navigate to={user ? "/tabs/contacts" : "/login"} replace />}
+        />
       </IonRouterOutlet>
     </IonReactRouter>
   );

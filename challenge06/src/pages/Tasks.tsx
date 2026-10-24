@@ -1,101 +1,111 @@
 export default Tasks;
-import { useState, useEffect } from "react";
 import {
   IonPage,
   IonHeader,
   IonToolbar,
   IonTitle,
   IonContent,
-  IonItem,
-  IonInput,
-  IonButton,
   IonList,
+  IonItem,
   IonLabel,
-  IonSpinner,
+  IonButton,
   IonText,
-  IonCheckbox,
+  useIonViewWillEnter,
 } from "@ionic/react";
+import { useNavigate } from "react-router-dom";
 import { useRealTimeCollection } from "../hooks/useRealTimeCollection";
-import Delete from "../components/Delete";
 import { useNetwork } from "../hooks/useNetwork";
+import Completed from "../components/Completed";
+import Delete from "../components/Delete";
+import LogoutButton from "../components/LogoutButton";
+
+interface TaskItem {
+  id: string;
+  tarea: string;
+  completada: boolean;
+}
 
 function Tasks() {
-  const { isOnline } = useNetwork();
-  const [tarea, setTarea] = useState("");
-  const { results, isPending, error, getAll, add, update, remove } =
+  const { results, error, getAll, update, remove } =
     useRealTimeCollection("tasks");
+  const { isOnline } = useNetwork();
+  const navigate = useNavigate();
 
-  useEffect(() => {
+  useIonViewWillEnter(() => {
     getAll();
-  }, []);
+  });
 
-  const handleAgregar = async () => {
-    if (!tarea.trim()) return;
-    await add({ tarea, completada: false });
-    setTarea("");
+  const completar = async (id: string) => {
+    await update(id, { completada: true });
     await getAll();
   };
 
-  const handleCompletar = async (id: string, completada: boolean) => {
-    await update(id, { completada: !completada });
-    await getAll();
-  };
-
-  const handleEliminar = async (id: string) => {
+  const eliminar = async (id: string) => {
     await remove(id);
     await getAll();
   };
+
+  const irADetalle = (task: TaskItem): void => {
+    navigate("/tabs/tasks/detail", { state: { task } });
+  };
+
+  const pendientes = results.filter((t: TaskItem) => !t.completada);
+  const completadas = results.filter((t: TaskItem) => t.completada);
 
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
           <IonTitle>Tareas</IonTitle>
+          <LogoutButton />
         </IonToolbar>
       </IonHeader>
-      {!isOnline && (
-        <IonText color="warning">
-          <p>Sin conexión. Las acciones están deshabilitadas.</p>
-        </IonText>
-      )}
       <IonContent className="ion-padding">
-        <IonItem>
-          <IonLabel position="floating">Tarea</IonLabel>
-          <IonInput
-            value={tarea}
-            onIonChange={(e) => setTarea(e.detail.value ?? "")}
-          />
-        </IonItem>
-
-        <IonButton
-          expand="block"
-          className="ion-margin-top"
-          onClick={handleAgregar}
-          disabled={isPending || !isOnline}
-        >
-          {isPending ? <IonSpinner name="crescent" /> : "Agregar"}
-        </IonButton>
-
+        {!isOnline && (
+          <IonText color="warning">
+            <p>Sin conexión. Las acciones están deshabilitadas.</p>
+          </IonText>
+        )}
         {error && (
           <IonText color="danger">
             <p>{error}</p>
           </IonText>
         )}
 
-        <IonList className="ion-margin-top">
-          {results.map((task) => (
+        <IonButton
+          expand="block"
+          disabled={!isOnline}
+          onClick={() => navigate("/tabs/tasks/add")}
+        >
+          Agregar tarea
+        </IonButton>
+
+        <h2>Pendientes</h2>
+        <IonList>
+          {pendientes.map((task: TaskItem) => (
             <IonItem key={task.id}>
-              <IonCheckbox
-                slot="start"
-                checked={task.completada}
-                onIonChange={() => handleCompletar(task.id, task.completada)}
-                disabled={!isOnline}
-              />
               <IonLabel>{task.tarea}</IonLabel>
-              <Delete
-                onDelete={() => handleEliminar(task.id)}
+              <Completed
+                onComplete={() => completar(task.id)}
                 disabled={!isOnline}
               />
+              <Delete onDelete={() => eliminar(task.id)} disabled={!isOnline} />
+              <IonButton fill="clear" onClick={() => irADetalle(task)}>
+                Detalle
+              </IonButton>
+            </IonItem>
+          ))}
+        </IonList>
+
+        <h2>Completadas</h2>
+        <IonList>
+          {completadas.map((task: TaskItem) => (
+            <IonItem key={task.id}>
+              <IonLabel>{task.tarea}</IonLabel>
+              <Delete onDelete={() => eliminar(task.id)} disabled={!isOnline} />
+              <IonButton fill="clear" onClick={() => irADetalle(task)}>
+                Detalle
+              </IonButton>
             </IonItem>
           ))}
         </IonList>
