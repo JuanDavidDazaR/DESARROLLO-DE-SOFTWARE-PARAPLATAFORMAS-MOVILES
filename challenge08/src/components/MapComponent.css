@@ -1,0 +1,13 @@
+@import "leaflet/dist/leaflet.css";
+
+.map-container {
+  height: 45vh;
+  width: 100%;
+}
+
+.map-loading {
+  height: 45vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
